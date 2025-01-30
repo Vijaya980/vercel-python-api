@@ -1,6 +1,11 @@
+import os
 import json
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+
+# Ensure cross-platform compatibility
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script
+DATA_FILE = os.path.join(BASE_DIR, "q-vercel-python.json")  # Use correct path separator
 
 # Load marks data
 with open("q-vercel-python.json", "r") as file:
