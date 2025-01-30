@@ -24,6 +24,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         
         self.wfile.write(json.dumps({"marks": marks}).encode('utf-8'))
+        return
 
     def do_OPTIONS(self):  # Handle preflight requests
         self.send_response(200)
@@ -31,3 +32,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
+        return
