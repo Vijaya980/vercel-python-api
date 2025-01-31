@@ -24,6 +24,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         
         self.wfile.write(json.dumps({"marks": marks}).encode('utf-8'))
+        return
 
     def do_OPTIONS(self):  # Handle preflight requests
         self.send_response(200)
