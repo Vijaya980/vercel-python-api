@@ -1,32 +1,44 @@
-import os
 import json
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
-
-# Ensure cross-platform compatibility
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script
-DATA_FILE = os.path.join(BASE_DIR, "q-vercel-python.json")  # Use correct path separator
 
 # Load marks data
 with open("q-vercel-python.json", "r") as file:
     marks_data = {entry["name"]: entry["marks"] for entry in json.load(file)}
 
+# Print the first few entries to check if data is loaded correctly
+print("Marks Data Sample:", list(marks_data.items())[:5])  # Debugging log
+
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        print("Received GET request")  # Debugging log
+
         # Parse query parameters
         query_components = parse_qs(urlparse(self.path).query)
         names = query_components.get("name", [])
+        
+        print("Query Params:", query_components)  # Debugging log
+        print("Names received:", names)  # Debugging log
 
-        # Fetch marks for the provided names
-        marks = [marks_data.get(name, 0) for name in names]
+        # Ensure names are stripped of extra spaces and case-matched
+        names = [name.strip() for name in names]
 
-        # Send response with CORS headers
+        # Fetch marks
+        marks = [marks_data.get(name, "Not Found") for name in names]
+        
+        print("Marks found:", marks)  # Debugging log
+
+        # Send response
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')  # Allow all origins
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')  # Allow GET requests
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')  # Allow content-type header
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
+        
+        response = json.dumps({"marks": marks})
+        print("Response:", response)  # Debugging log
+
+        self.wfile.write(response.encode('utf-8'))
+
         
         self.wfile.write(json.dumps({"marks": marks}).encode('utf-8'))
         return
