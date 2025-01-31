@@ -4,10 +4,10 @@ from urllib.parse import urlparse, parse_qs
 
 # Load marks data
 with open("q-vercel-python.json", "r") as file:
-    marks_data = {entry["name"]: entry["marks"] for entry in json.load(file)}
+    marks_data = {entry["name"].strip(): entry["marks"] for entry in json.load(file)}
 
-# Print the first few entries to check if data is loaded correctly
-print("Marks Data Sample:", list(marks_data.items())[:5])  # Debugging log
+# Print the first few names for debugging
+print("Sample Data:", list(marks_data.keys())[:10])  # Print some names from JSON
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -20,7 +20,7 @@ class handler(BaseHTTPRequestHandler):
         print("Query Params:", query_components)  # Debugging log
         print("Names received:", names)  # Debugging log
 
-        # Ensure names are stripped of extra spaces and case-matched
+        # Ensure names are stripped of spaces and matched in lowercase
         names = [name.strip() for name in names]
 
         # Fetch marks
@@ -38,16 +38,3 @@ class handler(BaseHTTPRequestHandler):
         print("Response:", response)  # Debugging log
 
         self.wfile.write(response.encode('utf-8'))
-
-        
-        self.wfile.write(json.dumps({"marks": marks}).encode('utf-8'))
-        return
-
-    def do_OPTIONS(self):  # Handle preflight requests
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
-        return
-
